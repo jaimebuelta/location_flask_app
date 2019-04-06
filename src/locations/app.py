@@ -11,6 +11,7 @@ def create_app():
               description='A Simple CRUD API')
 
     from locations.db import db, db_config
+    application.config['RESTPLUS_MASK_SWAGGER'] = False
     application.config.update(db_config)
     db.init_app(application)
     application.db = db
