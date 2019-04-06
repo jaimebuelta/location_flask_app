@@ -51,7 +51,7 @@ class ProductsRetrieveDestroy(Resource):
         product = Product.query.get(product_id)
         if not product:
             # The product is not present
-            return None, http.client.NOT_FOUND
+            return '', http.client.NOT_FOUND
 
         return product
 
@@ -60,7 +60,7 @@ class ProductsRetrieveDestroy(Resource):
         product = Product.query.get(product_id)
         if not product:
             # The product is not present
-            return None, http.client.NOT_FOUND
+            return '', http.client.NOT_FOUND
 
         # Deleting a product required deleting all its locations
         # before
@@ -70,7 +70,7 @@ class ProductsRetrieveDestroy(Resource):
 
         db.session.delete(product)
         db.session.commit()
-        return None, http.client.NO_CONTENT
+        return '', http.client.NO_CONTENT
 
 
 # Input and output formats for Location
@@ -92,24 +92,24 @@ location_model = api_namespace.model('Location', model)
 class LocationListCreate(Resource):
 
     @api_namespace.doc('list_locations_by_product')
-    @api_namespace.marshal_with(location_model)
     def get(self, product_id):
         product = Product.query.get(product_id)
         if not product:
-            return None, http.client.NOT_FOUND
+            return '', http.client.NOT_FOUND
 
         locations = (Location.query
                      .filter_by(product_id=product_id)
                      .order_by('timestamp')
                      .all())
-        return locations
+        result = api_namespace.marshal(locations, location_model)
+        return result
 
     @api_namespace.doc('create_location_for_product')
     @api_namespace.expect(location_parser)
     def post(self, product_id):
         product = Product.query.get(product_id)
         if not product:
-            return None, http.client.NOT_FOUND
+            return '', http.client.NOT_FOUND
 
         args = location_parser.parse_args(strict=True)
 
