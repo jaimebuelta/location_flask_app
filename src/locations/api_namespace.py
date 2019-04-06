@@ -25,7 +25,7 @@ class ProductsListCreate(Resource):
     @api_namespace.doc('list_products')
     @api_namespace.marshal_with(product_model)
     def get(self):
-        products = Product.query.all()
+        products = Product.query.order_by('id').all()
         return products
 
     @api_namespace.doc('create_products')
@@ -94,8 +94,11 @@ class LocationListCreate(Resource):
     @api_namespace.doc('list_locations_by_product')
     @api_namespace.marshal_with(location_model)
     def get(self, product_id):
-        products = Location.query.filter(product_id)
-        return products
+        locations = (Location.query
+                     .filter_by(product_id=product_id)
+                     .order_by('timestamp')
+                     .all())
+        return locations
 
     @api_namespace.doc('create_location_for_product')
     @api_namespace.expect(location_parser)

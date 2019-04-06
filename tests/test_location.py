@@ -31,3 +31,22 @@ def test_create_location(client, product_fixture):
     }
 
     assert result == expected
+
+
+def test_list_location(client, product_fixture, locations_fixture):
+    product_id = product_fixture[0]
+    response = client.get(f'/api/product/{product_id}/location/')
+
+    results = response.json
+
+    assert http.client.OK == response.status_code
+    assert len(results) == 4
+    expected = {
+        'latitude': ANY,
+        'longitude': ANY,
+        'elevation': ANY,
+        'timestamp': ANY,
+    }
+
+    for result in results:
+        assert result == expected

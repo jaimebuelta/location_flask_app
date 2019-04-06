@@ -1,4 +1,5 @@
 import pytest
+import random
 from locations.app import create_app
 
 
@@ -32,3 +33,31 @@ def product_fixture(client):
         product_id = product['product_id']
         url = f'/api/product/{product_id}'
         client.delete(url)
+
+
+@pytest.fixture
+def locations_fixture(client, product_fixture):
+    '''
+    Generate four locations in the system
+    for each of the product fixtures
+    '''
+
+    all_locations = {}
+    for product in product_fixture:
+        locations = []
+        for _ in range(4):
+            location = {
+                'elevation': random.randint(-10000, 9000),
+                'longitude': random.uniform(-180, 180),
+                'latitude': random.uniform(-90, 90),
+            }
+            url = f'/api/product/{product}/location/'
+            response = client.post(url, data=location)
+            result = response.json
+            locations.append(result)
+        all_locations[product] = locations
+
+    yield all_locations
+
+    # The locations will be cleaned when the products are
+    # deleted
