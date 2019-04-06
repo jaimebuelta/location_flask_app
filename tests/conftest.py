@@ -27,10 +27,8 @@ def product_fixture(client):
 
     yield product_ids
 
-    # Clean up all products
-    response = client.get('/api/product/')
-    for product in response.json:
-        product_id = product['product_id']
+    # Clean up products
+    for product_id in product_ids:
         url = f'/api/product/{product_id}'
         client.delete(url)
 

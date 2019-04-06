@@ -2,7 +2,7 @@ from locations.db import db
 
 
 class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.Sequence('product_id_seq'), primary_key=True)
     description = db.Column(db.String(100))
 
 
