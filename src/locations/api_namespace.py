@@ -88,8 +88,26 @@ class ProductsRetrieveDestroy(Resource):
 
 # Input and output formats for Location
 location_parser = api_namespace.parser()
-location_parser.add_argument('longitude', required=True, type=float)
-location_parser.add_argument('latitude', required=True, type=float)
+
+
+def longitude_type(raw_value):
+    value = float(raw_value)
+    if not (-180.0 <= value <= 180.0):
+        raise ValueError('Not valid longidude')
+    return value
+
+
+def latitude_type(raw_value):
+    value = float(raw_value)
+    if not (-90.0 <= value <= 90.0):
+        raise ValueError('Not valid latitude')
+    return value
+
+
+location_parser.add_argument('longitude', required=True, type=longitude_type,
+                             help='Float number between -180 and 180')
+location_parser.add_argument('latitude', required=True, type=latitude_type,
+                             help='Float number between -90 and 90')
 location_parser.add_argument('elevation', required=True, type=int)
 
 model = {
