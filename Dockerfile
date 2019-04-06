@@ -10,10 +10,13 @@ RUN mkdir -p /opt/code
 WORKDIR /opt/code
 
 # Get and install python dependencies
-ARG BUILD_DEPS="python3-dev build-base gcc linux-headers"
+ARG BUILD_DEPS="python3-dev build-base gcc linux-headers postgresql-dev"
 RUN apk add $BUILD_DEPS
+
+# Install the requirements in user, so they are installed in /root/.local
+ADD requirements_server.txt /opt/code
+RUN pip3 install --user -r requirements_server.txt
 ADD requirements.txt /opt/code
-# Install in user, so they are installed in /root/.local
 RUN pip3 install --user -r requirements.txt
 
 

@@ -1,0 +1,2 @@
+# Requirements only to run the application
+uwsgi==2.0.18

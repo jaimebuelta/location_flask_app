@@ -1,3 +1,5 @@
+# Application requirements
 flask==1.0.2
 flask-restplus==0.12.1
-uwsgi==2.0.18
+flask-sqlalchemy==2.3.1
+psycopg2==2.8
