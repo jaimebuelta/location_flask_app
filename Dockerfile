@@ -14,10 +14,11 @@ ARG BUILD_DEPS="python3-dev build-base gcc linux-headers postgresql-dev"
 RUN apk add $BUILD_DEPS
 
 # Install the requirements in user, so they are installed in /root/.local
+RUN pip3 install --upgrade pip
 ADD requirements_server.txt /opt/code
-RUN pip3 install --user -r requirements_server.txt
+RUN pip3 install --no-warn-script-location --user -r requirements_server.txt
 ADD requirements.txt /opt/code
-RUN pip3 install --user -r requirements.txt
+RUN pip3 install --no-warn-script-location --user -r requirements.txt
 
 
 # This stage is a small version that will be run
