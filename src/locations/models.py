@@ -1,4 +1,4 @@
-from locations_app import db
+from locations.app import db
 
 
 class Product(db.Model):

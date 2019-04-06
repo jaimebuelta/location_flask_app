@@ -18,7 +18,7 @@ The unit-tests are available in the `./tests` subdirectory
 Call
 
     $ docker-compose build test
-    $ docker-compose run test
+    $ docker-compose up test
 
 
 Start the service locally

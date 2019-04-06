@@ -17,6 +17,8 @@ services:
 
     test:
         env_file: environment.env
+        environment:
+            - PYTHONDONTWRITEBYTECODE=1
         build: 
             context: .
         entrypoint: pytest
@@ -24,7 +26,7 @@ services:
             - db
         volumes:
             - ./src:/opt/code
-            - ./tests:/opt/code/
+            - ./tests:/opt/code/tests
 
     # Producion related
     server:
