@@ -16,8 +16,12 @@ def test_create_product(client, product_fixture):
     result = response.json
 
     assert http.client.CREATED == response.status_code
-    assert result['product_description'] == 'New product'
-    assert 'product_id' in result
+
+    expected = {
+        'product_id': ANY,
+        'product_description': 'New product'
+    }
+    assert result == expected
 
 
 def test_list_products(client, product_fixture):
