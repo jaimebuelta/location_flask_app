@@ -39,7 +39,7 @@ Start the service with
 
 and access the service at `http://localhost:8080`. `-d` will run it as daemon and detach it from the terminal. `--build` will rebuild the service and all its dependencies (including the db)
 
-The service endpoints are documented in http://localhost:8080
+The service tendpoints are documented in http://localhost:8080
 
 
 Comments
@@ -49,7 +49,7 @@ The API is divided in two, an ops endpoint, that contains the healthcheck, and t
 the DB works fine, as well as the service is up and running.
 
 The api has two main entities, products and locations. Locations are associated to products. The timestamp is generated automatically by the server, and locations cannot be edited. This is to protect with tampering on the locations, as changing later when a product was in a particular place (or the place) seems not required. A possibility may be that the product accumulate positions to send to the remote server at a later stage. In any case, the application could be changed.
-Products are changeable, and removable. Deleting a product deletes all its locations automatically.
+Products are changeable, and removable. Deleting a product deletes all its locations automatically. I didn't implement PATCH as there are no really partial updates, the only parameter to change is the description.
 Both Products and Locations are stored in two tables in the DB. The model is quite straigthforward. The only caveat is to store longitude and latitude as floats, which may lose precission if there's later some arithmetic done. There are specific GIS fields to store geolocation in various DBS (including PostgreSQL), but I thought not to go that route unless there's a requirement. The elevation is stored as an integer, which gives a resolution of 1m. All times are stored in UTC.
 
 The tech stack used is Flask, with Flask-RESTPlus as the main framework, as it generates automatically a swagger interface that makes the discovery of the API very easy. The connection to the PostgreSQL DB uses SQLAlchemy. The tests run with pytest.
