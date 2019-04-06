@@ -3,6 +3,9 @@ Locations app
 
 A RESTful app to track location of products
 
+Inline-style: 
+![screenshot](https://github.com/jaimebuelta/location_flask_app/blob/master/screenshot.png "Swagger UI")
+
 
 Requirements
 -----
