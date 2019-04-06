@@ -1,10 +1,11 @@
+'''
+Test the Product operations
+
+
+Use the product_fixture to have data to retrieve, it generated three products
+'''
 from unittest.mock import ANY
 import http.client
-
-
-def test_healthcheck(client):
-    response = client.get('/ops/healthcheck')
-    assert http.client.OK == response.status_code
 
 
 def test_create_product(client, product_fixture):
