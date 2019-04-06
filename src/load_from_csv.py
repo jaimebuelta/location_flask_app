@@ -2,6 +2,7 @@ import argparse
 import csv
 from locations.app import create_app
 from locations.models import Product, Location
+from delorean import parse
 from locations.db import db
 
 
@@ -23,8 +24,12 @@ if __name__ == '__main__':
                               description=row['description'])
             db.session.add(product)
 
+        # Parse to get the time in UTC
+        timestamp = parse(row['datetime'])
+        timestamp.shift('UTC')
+
         location = Location(product_id=row['id'],
-                            timestamp=row['datetime'],
+                            timestamp=timestamp.datetime,
                             latitude=row['latitude'],
                             longitude=row['longitude'],
                             elevation=row['elevation'])
