@@ -1,5 +1,6 @@
 import http.client
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 from flask_restplus import Namespace, Resource, fields
 from locations.models import Product, Location
 from locations.db import db
@@ -127,3 +128,29 @@ class LocationListCreate(Resource):
         result = api_namespace.marshal(new_location, location_model)
 
         return result, http.client.CREATED
+
+
+# Input and output formats for AllLocation
+model = {
+    'product_id': fields.Integer(),
+    'description': fields.String(attribute='product.description'),
+    'longitude': fields.Float(),
+    'latitude': fields.Float(),
+    'elevation': fields.Integer(),
+    'timestamp': fields.DateTime(dt_format='iso8601'),
+}
+all_location_model = api_namespace.model('AllLocation', model)
+
+
+@api_namespace.route('/location/')
+class AllLocationList(Resource):
+
+    @api_namespace.doc('list_all_locations')
+    @api_namespace.marshal_with(all_location_model)
+    def get(self):
+        # Join both tables to return the values
+        all_locations = (Location.query
+                         .options(joinedload(Location.product))
+                         .order_by('product_id', 'timestamp')
+                         .all())
+        return all_locations

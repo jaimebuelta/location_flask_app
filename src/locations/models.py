@@ -18,3 +18,5 @@ class Location(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     elevation = db.Column(db.Integer, nullable=False)
+
+    product = db.relationship("Product")

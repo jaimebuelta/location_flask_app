@@ -57,3 +57,20 @@ def test_list_location_not_found_product(client, product_fixture,
     response = client.get(f'/api/product/2345/location/')
 
     assert http.client.NOT_FOUND == response.status_code
+
+
+def test_list_all_locations(client, product_fixture, locations_fixture):
+    response = client.get(f'/api/location/')
+
+    assert http.client.OK == response.status_code
+
+    expected = {
+        'product_id': ANY,
+        'description': ANY,
+        'latitude': ANY,
+        'longitude': ANY,
+        'elevation': ANY,
+        'timestamp': ANY,
+    }
+    for result in response.json:
+        assert result == expected
