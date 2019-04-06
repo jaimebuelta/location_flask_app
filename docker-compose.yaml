@@ -21,7 +21,7 @@ services:
             - PYTHONDONTWRITEBYTECODE=1
         build: 
             context: .
-        entrypoint: pytest
+        entrypoint: pytest -c tests/pytest.ini
         depends_on:
             - db
         volumes:
