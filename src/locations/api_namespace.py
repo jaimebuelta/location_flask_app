@@ -26,12 +26,18 @@ class ProductsListCreate(Resource):
     @api_namespace.doc('list_products')
     @api_namespace.marshal_with(product_model)
     def get(self):
+        '''
+        Retrieves all the products
+        '''
         products = Product.query.order_by('id').all()
         return products
 
     @api_namespace.doc('create_products')
     @api_namespace.expect(product_parser)
     def post(self):
+        '''
+        Create a new product
+        '''
         args = product_parser.parse_args()
 
         new_product = Product(description=args['product_description'])
@@ -49,6 +55,9 @@ class ProductsRetrieveDestroy(Resource):
     @api_namespace.doc('retrieve_product')
     @api_namespace.marshal_with(product_model)
     def get(self, product_id):
+        '''
+        Retrieve a product
+        '''
         product = Product.query.get(product_id)
         if not product:
             # The product is not present
@@ -58,6 +67,9 @@ class ProductsRetrieveDestroy(Resource):
 
     @api_namespace.doc('delete_product')
     def delete(self, product_id):
+        '''
+        Delete a product. This will delete all its locations.
+        '''
         product = Product.query.get(product_id)
         if not product:
             # The product is not present
@@ -94,6 +106,9 @@ class LocationListCreate(Resource):
 
     @api_namespace.doc('list_locations_by_product')
     def get(self, product_id):
+        '''
+        List all locations for a product
+        '''
         product = Product.query.get(product_id)
         if not product:
             return '', http.client.NOT_FOUND
@@ -108,6 +123,9 @@ class LocationListCreate(Resource):
     @api_namespace.doc('create_location_for_product')
     @api_namespace.expect(location_parser)
     def post(self, product_id):
+        '''
+        Add a new location for a product
+        '''
         product = Product.query.get(product_id)
         if not product:
             return '', http.client.NOT_FOUND
@@ -148,6 +166,10 @@ class AllLocationList(Resource):
     @api_namespace.doc('list_all_locations')
     @api_namespace.marshal_with(all_location_model)
     def get(self):
+        '''
+        Retrieve all the locations in the system.
+        This will display its products
+        '''
         # Join both tables to return the values
         all_locations = (Location.query
                          .options(joinedload(Location.product))
