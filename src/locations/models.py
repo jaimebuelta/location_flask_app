@@ -18,8 +18,3 @@ class Location(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     elevation = db.Column(db.Integer, nullable=False)
-
-
-if __name__ == '__main__':
-    # When called in its own, it will initialise the schema
-    db.create_all()
