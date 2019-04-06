@@ -1,9 +1,11 @@
 import http.client
+from flask import request
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 from flask_restplus import Namespace, Resource, fields
 from locations.models import Product, Location
 from locations.db import db
+from locations.pagination import get_next_page, get_previous_page
 
 api_namespace = Namespace('api', description='API operations')
 
@@ -110,6 +112,8 @@ location_parser.add_argument('latitude', required=True, type=latitude_type,
                              help='Float number between -90 and 90')
 location_parser.add_argument('elevation', required=True, type=int)
 
+
+
 model = {
     'longitude': fields.Float(attribute='longitude'),
     'latitude': fields.Float(attribute='latitude'),
@@ -123,6 +127,7 @@ location_model = api_namespace.model('Location', model)
 class LocationListCreate(Resource):
 
     @api_namespace.doc('list_locations_by_product')
+
     def get(self, product_id):
         '''
         List all locations for a product
@@ -135,8 +140,10 @@ class LocationListCreate(Resource):
                      .filter_by(product_id=product_id)
                      .order_by('timestamp')
                      .all())
+
         result = api_namespace.marshal(locations, location_model)
         return result
+
 
     @api_namespace.doc('create_location_for_product')
     @api_namespace.expect(location_parser)
@@ -177,20 +184,51 @@ model = {
 }
 all_location_model = api_namespace.model('AllLocation', model)
 
+# Pagination parser
+pagination_parser = api_namespace.parser()
+
+
+def positive(raw_value):
+    value = int(raw_value)
+    if value <= 0:
+        raise ValueError('Needs to be a positive integer')
+    return value
+
+
+pagination_parser.add_argument('page', default=1, type=positive)
+pagination_parser.add_argument('size', default=100, type=positive)
+
 
 @api_namespace.route('/location/')
 class AllLocationList(Resource):
 
     @api_namespace.doc('list_all_locations')
-    @api_namespace.marshal_with(all_location_model)
+    @api_namespace.expect(pagination_parser)
     def get(self):
         '''
-        Retrieve all the locations in the system.
+        Retrieve all the locations in the system, in paginated format.
         This will display its products
         '''
+        pagination = pagination_parser.parse_args()
+        size = pagination['size']
+        offset = (pagination['page'] - 1) * size
+
         # Join both tables to return the values
-        all_locations = (Location.query
-                         .options(joinedload(Location.product))
-                         .order_by('product_id', 'timestamp')
-                         .all())
-        return all_locations
+        base_query = (Location.query
+                      .options(joinedload(Location.product))
+                      .order_by('product_id', 'timestamp'))
+
+        total = base_query.count()
+        all_locations = base_query.offset(offset).limit(size).all()
+
+        # Calculate next/last
+        next_page = get_next_page(request, pagination, total)
+        previous_page = get_previous_page(request, pagination)
+        result = api_namespace.marshal(all_locations, all_location_model)
+        paginated_format = {
+            'next': next_page,
+            'previous': previous_page,
+            'total': total,
+            'result': result,
+        }
+        return paginated_format

@@ -119,6 +119,16 @@ def test_list_all_locations(client, product_fixture, locations_fixture):
 
     assert http.client.OK == response.status_code
 
+    paginated_format = {
+        'result': ANY,
+        'next': ANY,
+        'previous': ANY,
+        # 17 initial elements from input.txt
+        # 12 in the fixtures (3 * 4)
+        'total': 12 + 17,
+    }
+    assert paginated_format == response.json
+
     expected = {
         'product_id': ANY,
         'description': ANY,
@@ -127,5 +137,68 @@ def test_list_all_locations(client, product_fixture, locations_fixture):
         'elevation': ANY,
         'timestamp': ANY,
     }
-    for result in response.json:
+    for result in response.json['result']:
         assert result == expected
+
+
+def test_list_all_locations_pagination(client, product_fixture,
+                                       locations_fixture):
+    '''
+    Paginate so we retrieve the values in two pages.
+
+    Check the next and previous are the expected results
+    '''
+    response = client.get(f'/api/location/?size=20')
+
+    assert http.client.OK == response.status_code
+
+    paginated_format = {
+        'result': ANY,
+        'next': ANY,
+        'previous': ANY,
+        # 17 initial elements from input.txt
+        # 12 in the fixtures (3 * 4)
+        'total': 12 + 17,
+    }
+    assert paginated_format == response.json
+    assert len(response.json['result']) == 20
+
+    assert response.json['previous'] is None
+
+    next_page = response.json['next']
+    response = client.get(next_page)
+
+    assert http.client.OK == response.status_code
+    assert len(response.json['result']) == 9
+    assert response.json['next'] is None
+    assert 'size=20' in response.json['previous']
+    assert 'page=1' in response.json['previous']
+
+
+@pytest.mark.parametrize(['size', 'page', 'error_msg'],
+    [
+        ('BAD', 1, 'base 10'),
+        (1, 'BAD', 'base 10'),
+        (0, 1, 'positive integer'),
+        (1, 0, 'positive integer'),
+        (-1, 1, 'positive integer'),
+        (1, -1, 'positive integer'),
+        (0.1, 1, 'base 10'),
+        (1, 0.1, 'base 10'),
+    ],
+)
+def test_list_all_locations_bad_pagination(client, size, page, error_msg):
+    '''
+    Check only valid pagination params are accepted
+    '''
+    params = {
+        'size': size,
+        'page': page,
+    }
+    response = client.get(f'/api/location/', query_string=params)
+    assert response.status_code == http.client.BAD_REQUEST
+    result = response.json
+    # Check there's a "convert" error message
+    assert 'errors' in result
+    assert [msg for msg in result['errors'].values()
+            if error_msg in msg]
