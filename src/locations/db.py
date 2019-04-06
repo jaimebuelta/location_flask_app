@@ -1,8 +1,6 @@
 import os
 from flask_sqlalchemy import SQLAlchemy
 
-from .app import application
-
 # Database initialisation
 db_params = {
     'host': os.environ['POSTGRES_HOST'],
@@ -12,7 +10,8 @@ db_params = {
     'port': os.environ['POSTGRES_PORT'],
 }
 DB_URI = 'postgresql://{user}:{pwd}@{host}:{port}/{database}'
-application.config['SQLALCHEMY_DATABASE_URI'] = DB_URI.format(**db_params)
-application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(application)
+db_config = {
+    'SQLALCHEMY_DATABASE_URI': DB_URI.format(**db_params),
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False,
+}
+db = SQLAlchemy()

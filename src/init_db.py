@@ -1,5 +1,7 @@
-from locations.db import db
+from locations.app import create_app
 
 if __name__ == '__main__':
+    application = create_app()
+    application.app_context().push()
     # Initialise the DB
-    db.create_all()
+    application.db.create_all()
