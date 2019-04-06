@@ -21,7 +21,6 @@ class MReq:
 )
 def test_get_next_page(req, pagination, total, expected):
     next_page = get_next_page(req, pagination, total)
-    print(next_page)
     if expected:
         assert expected in next_page
     else:

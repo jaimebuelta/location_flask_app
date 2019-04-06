@@ -67,6 +67,26 @@ class ProductsRetrieveDestroy(Resource):
 
         return product
 
+    @api_namespace.doc('update_product')
+    @api_namespace.expect(product_parser)
+    def put(self, product_id):
+        '''
+        Update a product description
+        '''
+        product = Product.query.get(product_id)
+        if not product:
+            # The product is not present
+            return '', http.client.NOT_FOUND
+
+        args = product_parser.parse_args()
+        product.description = args['product_description']
+
+        db.session.add(product)
+        db.session.commit()
+
+        result = api_namespace.marshal(product, product_model)
+        return result, http.client.OK
+
     @api_namespace.doc('delete_product')
     def delete(self, product_id):
         '''
@@ -113,7 +133,6 @@ location_parser.add_argument('latitude', required=True, type=latitude_type,
 location_parser.add_argument('elevation', required=True, type=int)
 
 
-
 model = {
     'longitude': fields.Float(attribute='longitude'),
     'latitude': fields.Float(attribute='latitude'),
@@ -127,7 +146,6 @@ location_model = api_namespace.model('Location', model)
 class LocationListCreate(Resource):
 
     @api_namespace.doc('list_locations_by_product')
-
     def get(self, product_id):
         '''
         List all locations for a product
@@ -144,7 +162,6 @@ class LocationListCreate(Resource):
         result = api_namespace.marshal(locations, location_model)
         return result
 
-
     @api_namespace.doc('create_location_for_product')
     @api_namespace.expect(location_parser)
     def post(self, product_id):
@@ -157,7 +174,7 @@ class LocationListCreate(Resource):
 
         args = location_parser.parse_args(strict=True)
 
-        # Generate the timestamp
+        # Generate the timestamp at the time of creation
         timestamp = datetime.utcnow()
 
         new_location = Location(longitude=args['longitude'],

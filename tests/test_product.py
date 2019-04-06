@@ -49,8 +49,28 @@ def test_get_product(client, product_fixture):
     result = response.json
 
     assert http.client.OK == response.status_code
-    assert result['product_description'] == f'Product A'
+    assert result['product_description'] == 'Product A'
     assert 'product_id' in result
+
+
+def test_update_product(client, product_fixture):
+    product_id = product_fixture[0]
+    new_description = {
+        'product_description': 'New description',
+    }
+    response = client.put(f'/api/product/{product_id}',
+                          data=new_description)
+    result = response.json
+
+    assert http.client.OK == response.status_code
+    assert result['product_description'] == 'New description'
+
+    # The change is persistent
+    response = client.get(f'/api/product/{product_id}')
+    result = response.json
+
+    assert http.client.OK == response.status_code
+    assert result['product_description'] == 'New description'
 
 
 def test_get_not_found_product(client):

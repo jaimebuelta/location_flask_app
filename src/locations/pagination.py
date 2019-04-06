@@ -16,12 +16,12 @@ def get_next_page(request, pagination, total):
 
         # Reconstruct the full url
         new_query = urlencode(parsed_query_params, doseq=True)
-        new_url = ParseResult(
-            scheme=parsed_url.scheme, netloc=parsed_url.netloc,
-            path=parsed_url.path,
-            params=parsed_url.params,
-            query=new_query,
-            fragment=parsed_url.fragment)
+        new_url = ParseResult(scheme=parsed_url.scheme,
+                              netloc=parsed_url.netloc,
+                              path=parsed_url.path,
+                              params=parsed_url.params,
+                              query=new_query,
+                              fragment=parsed_url.fragment)
         next_page = urlunparse(new_url)
 
     return next_page
@@ -41,12 +41,12 @@ def get_previous_page(request, pagination):
 
         # Reconstruct the full url
         new_query = urlencode(parsed_query_params, doseq=True)
-        new_url = ParseResult(
-            scheme=parsed_url.scheme, netloc=parsed_url.netloc,
-            path=parsed_url.path,
-            params=parsed_url.params,
-            query=new_query,
-            fragment=parsed_url.fragment)
+        new_url = ParseResult(scheme=parsed_url.scheme,
+                              netloc=parsed_url.netloc,
+                              path=parsed_url.path,
+                              params=parsed_url.params,
+                              query=new_query,
+                              fragment=parsed_url.fragment)
         prev_page = urlunparse(new_url)
 
     return prev_page
