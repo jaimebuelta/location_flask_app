@@ -50,3 +50,10 @@ def test_list_location(client, product_fixture, locations_fixture):
 
     for result in results:
         assert result == expected
+
+
+def test_list_location_not_found_product(client, product_fixture,
+                                         locations_fixture):
+    response = client.get(f'/api/product/2345/location/')
+
+    assert http.client.NOT_FOUND == response.status_code

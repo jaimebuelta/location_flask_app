@@ -94,6 +94,10 @@ class LocationListCreate(Resource):
     @api_namespace.doc('list_locations_by_product')
     @api_namespace.marshal_with(location_model)
     def get(self, product_id):
+        product = Product.query.get(product_id)
+        if not product:
+            return None, http.client.NOT_FOUND
+
         locations = (Location.query
                      .filter_by(product_id=product_id)
                      .order_by('timestamp')
